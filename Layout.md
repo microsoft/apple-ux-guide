@@ -37,7 +37,7 @@ Auto Layout performance is sufficient for most experiences, even those with sign
 Examples where you might want to consider manual layout:
 - Calling `systemLayoutSizeFitting(_:)'` or `fittingSize` repeatedly to determine a layout that fits.
 - Doing non-trivial frame/constraint/visibility adjustment in heavily hit layout override points like `layout`/`layoutSubviews`/`viewDidLayoutSubviews`/etc.
-    - On iOS, if the adjustments are only in `viewWillTransition(to:with:)` and don't need to measure repeatedly using `systemLayoutSizeFitting(_:)'`, there isn't likely to be much performance impact so you will likely want to still Auto Layout for all the benefits above.
+    - On iOS, if the adjustments are only in `viewWillTransition(to:with:)` and don't need to measure repeatedly using `systemLayoutSizeFitting(_:)'`, there shouldn't be much performance impact so Auto Layout is likely the better choice for all the benefits above.
 
 
 ## Compose Hierarchies with NSStackViews/UIStackViews
