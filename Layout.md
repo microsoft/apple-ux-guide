@@ -13,13 +13,13 @@ Using [AutoLayout](https://developer.apple.com/library/archive/documentation/Use
 
 ### Examples
 
-```Swift
+```swift
 // Good: Auto Layout will properly mirror the layout for right-to-left languages
 NSLayoutConstraint.activate([subview.leadingAnchor.constraint(equalTo: superview.leadingAnchor,
                                                              constant: leadingPadding)])
 ```
 
-```Swift
+```swift
 // Bad: Frame-based layout requires special computation for right-to-left languages
 let superviewSize = superview.bounds.size
 let subviewOriginX = traitCollection.layoutDirection == .rightToLeft
