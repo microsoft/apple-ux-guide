@@ -1,7 +1,7 @@
 # Key View Loops
 
 ### Convention
-It is recommended to let the window automatically calculate your key view loop for you. There are rare cases in which the automatically calculated key view loop is not sufficient.
+It is recommended to let the window automatically calculate your key view loop for you. There are very few cases in which the automatically calculated key view loop is not sufficient.
 
 ### Rationale
 Allowing the window to automatically calculate the key view loop (by setting `window.autoRecalculatesKeyViewLoop = true`), you can:
@@ -11,13 +11,13 @@ Allowing the window to automatically calculate the key view loop (by setting `wi
 
 One thing to note: setting `autoRecalculatesKeyViewLoop` to `true` means that any NSView whose `nextKeyView` property you have manually set will be ignored. This is seemingly because AppKit will constantly recalculate the key view loop every time a view is added or the user tabs to a new view, stamping over any customizations to the key view loop done by  the developer.
 
-Manually managing your own key-view loop (by setting `window.autoRecalculatesKeyViewLoop = false`) has a few caveats:
+Manually managing your own key-view loop (by setting `window.autoRecalculatesKeyViewLoop = false`) has a few major downsides:
 - Doing so means you will have no key view loop except for whichever views you have manually set the `nextKeyView` property of in your project.
 - Any call to `window.recalculateKeyViewLoop()` will stamp over your customizations, as we have already described.
 
 
 ### Exceptions
-If you are using storyboards and/or xibs, it is easier to set the nextKeyView outlets for an entire window. Also, If you only have a few specific views whose `nextKeyView` property you want to modify, you can call `window.recalculateKeyViewLoop()` once to get an AppKit generated key view loop, and then set up your custom key views.
+If your window has a fairly static view heirarchy it is easier to set the nextKeyView properties for every applicable view. If you only have a few specific views whose `nextKeyView` property you want to modify, you can call `window.recalculateKeyViewLoop()` once to get an AppKit generated key view loop, and then set up your custom key views.
 
 
 ### Examples
@@ -42,4 +42,8 @@ override func viewDidAppear() {
     // will overwrite the nextKeyView of fooView
 }
 ```
+
+### References
+
+https://cocoadev.github.io/KeyViewLoopGuidelines/
 
