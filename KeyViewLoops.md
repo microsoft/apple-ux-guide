@@ -15,6 +15,8 @@ Manually managing your own key-view loop (by setting `window.autoRecalculatesKey
 - Doing so means you will have no key view loop except for whichever views you have manually set the `nextKeyView` property of in your project.
 - Any call to `window.recalculateKeyViewLoop()` will stamp over your customizations, as we have already described.
 
+### Alternatives
+Rather than modifying the key view loop, consider if there is an existing AppKit control that could fit your needs. Both NSTableView and NSCollectionView will allow you to create a list / grid of views and use keyboard arrow keys to move selection between them. This plays nicely with the key view loop, as the entire table (in the case of NSTableView) is what recieves focus, while the arrow keys select the individual row / element. 
 
 ### Exceptions
 If your window has a fairly static view heirarchy it is easier to set the nextKeyView properties for every applicable view. If you only have a few specific views whose `nextKeyView` property you want to modify, you can call `window.recalculateKeyViewLoop()` once to get an AppKit generated key view loop, and then set up your custom key views.
