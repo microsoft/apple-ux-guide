@@ -1,5 +1,6 @@
 //
-//  Copyright © 2021 Microsoft. All rights reserved.
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+//  Licensed under the MIT License.
 //
 
 import UIKit
@@ -8,9 +9,6 @@ class ResettableView: UIView {
 	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 		super.touchesEnded(touches, with: event)
 		subviews.forEach { $0.removeFromSuperview() }
-		setNeedsLayout()
-		setNeedsDisplay()
-		layoutIfNeeded()
 	}
 }
 
@@ -19,9 +17,9 @@ class ViewController: UIViewController {
 	var imagesContainerView = ResettableView()
 	let stretchingSwitch = UISwitch()
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-
+	override func loadView() {
+		super.loadView()
+		
 		let pngButton = UIButton(frame: .zero)
 		pngButton.setTitle("Draw PNG Images", for: .normal)
 		pngButton.addTarget(self, action: #selector(pressedPngImages(_:)), for: .touchUpInside)
@@ -69,7 +67,8 @@ class ViewController: UIViewController {
 
 	@objc func pressedPngImages(_ sender: Any) {
 		let collection = imageViews(shouldStretch: stretchingSwitch.isOn, imageName: "Image")
-		addCollectionToViewHierarchy(collection: collection)	}
+		addCollectionToViewHierarchy(collection: collection)
+	}
 	
 	@objc func pressedVectorImages(_ sender: Any) {
 		let collection = imageViews(shouldStretch: stretchingSwitch.isOn, imageName: "ImageVector")
@@ -78,7 +77,8 @@ class ViewController: UIViewController {
 
 	@objc func pressedSVGPngImages(_ sender: Any) {
 		let collection = imageViews(shouldStretch: stretchingSwitch.isOn, imageName: "SVGImage")
-		addCollectionToViewHierarchy(collection: collection)    }
+		addCollectionToViewHierarchy(collection: collection)
+	}
 
 	@objc func pressedSVGVectorImages(_ sender: Any) {
 		let collection = imageViews(shouldStretch: stretchingSwitch.isOn, imageName: "SVGImageVector")
@@ -115,10 +115,10 @@ class ViewController: UIViewController {
 			rowStack.append(UIStackView(arrangedSubviews: images))
 		}
 		
-		let collection = UIStackView(arrangedSubviews: rowStack)
-		collection.axis = .vertical
+		let imageViews = UIStackView(arrangedSubviews: rowStack)
+		imageViews.axis = .vertical
 
-		return collection
+		return imageViews
 	}
 }
 

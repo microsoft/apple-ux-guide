@@ -1,7 +1,7 @@
 [[_TOC_]]
 # iOS Image File Format
 
-Image assets officially support multiple file formats including PNG, PDF and SVG. The recommended image file format for iOS images is SVG images with "Preserve Vector Data" option disabled in Xcode. There's no significant difference in size or performance between PDF and SVG images when "Preserve Vector Data" option is disabled, but SVG images are easier share across all platforms.
+Image assets officially support multiple file formats including PNG, PDF and SVG. The recommended image file format for iOS images is SVG images with "Preserve Vector Data" option disabled in Xcode. There's no significant difference in size or performance between PDF and SVG images when "Preserve Vector Data" option is disabled, but SVG images are easier to share with Android and web.
 
 ## Vector based image file format Overview
 When a single scale PDF or SVG image with "Preserve Vector Data" option disabled is used for an imageset, Xcode generates corresponding @1x, @2x, or @3x PNG images depending on the build target at build time. At runtime, the application loads the PNG image from the app bundle, so the runtime behavior is the same as if PNG images are provided for the imageset.
@@ -10,7 +10,7 @@ When a single scale PDF or SVG image with "Preserve Vector Data" option enabled 
 
 Stretching an image is not supported or necessary in most scenarios such as displayed within a button; however, in the rare cases when an image needs to fill a variable size such as the entire screen, streching an image is indeed necessary.
 
-## Bundle Size Impact
+## App Size Impact
 When vector data is disabled, the bundle size difference between PDF and SVG graphics is very trivial. However, there is a significant application bundle size increase when "Preserve Vector Data" option is enabled; PDFs have a bigger size increase than SVGs. The following bundle sizes are collected by using the asset catalog compiling tool directly on generated PDF and SVG imagesets from [Fluent icons repo](https://github.com/microsoft/fluentui-system-icons). There are 7702 imagesets in total at the time of the size analysis.
 
 | Image Type | Assets.car Size (no vector data preserved) | Assets.car Size (vector data preserved) | Delta |
@@ -25,8 +25,8 @@ There's no measurable runtime performance difference between "Preserve Vector Da
 
 | | PDF w/o vector data preserved | SVG w/o vector data preserved | PDF with vector data preserved | SVG with vector data preserved |
 |--|--|--|--|--|
-| Intrinsic Size | 233 | 233.6 | 235.3 | 233.3 |
-| Stretched | 101.3 | 102.6 | 433.3 | 402.7 |
+| Intrinsic Size (ms) | 233 | 233.6 | 235.3 | 233.3 |
+| Stretched (ms) | 101.3 | 102.6 | 433.3 | 402.7 |
 
 ### Methodology
 The time profiling was done on a physical device with Xcode Instruments' Time Profiler tool measuring the time it takes for `CA::Transaction::Commit()` to complete after initiating the drawing of 1000 images.
