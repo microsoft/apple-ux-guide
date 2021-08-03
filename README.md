@@ -4,6 +4,7 @@ This guide contains best practices for building great experiences and writing su
 
 ## Table of Contents
 
+* [iOS Image File Format](iOSImageFileFormat.md)
 * [Layout](Layout.md)
 * [Storyboards and Xibs](StoryboardsAndXibs.md)
 * [View Controllers](ViewControllers.md)
