@@ -1,4 +1,3 @@
-[[_TOC_]]
 # iOS Image File Format
 
 Image assets officially support multiple file formats including PNG, PDF and SVG. The recommended image file format for iOS images is SVG images with "Preserve Vector Data" option disabled in Xcode. There's no significant difference in size or performance between PDF and SVG images when "Preserve Vector Data" option is disabled, but SVG images are easier to share with Android and web.
