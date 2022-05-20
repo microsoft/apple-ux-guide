@@ -40,11 +40,73 @@ GeometryReader { proxy in
 ```
 
 ### Exceptions
-There are cases where you may need to read the size proposed to a view, instead of the final size (for example to do custom proportional layout). In these cases, first consider if a combination of stacks, spacers and frames can be used instead.
+There are cases where you may need to read the size proposed to a view instead of the final size (for example to do custom proportional layout). In these cases, first consider if a combination of stacks, spacers and frames can be used instead.
 
-If you absolutely need the `GeometryReader`, expanding to fill the dimension you want to measure is unavoidable. You can still limit the impact using a few of these methods:
-- Wrap the `GeometryReader` in a frame, constraining the dimension you don't care about.
-- Place the geometry reader in a `ZStack`. Combined with the previous method, this can help you measure without affecting the layout of other views in the `ZStack`. Note this will still cause the `ZStack` to fill the dimension you're measuring.
+If you absolutely need the `GeometryReader`, expanding to fill the dimension you want to measure is unavoidable.
+
+#### Example 1
+Let's say you want to ensure a view's width is always 0.6x of the proposed width and the height is fixed at 20pts.
+
+Wrap a `GeometryReader` in a frame, constraining the dimension you don't care about.
+```swift
+GeometryReader { proxy in 
+    ...
+}
+.frame(height: 0) // The GeometryReader will only take the proposed width.
+```
+Note that if you place your content inside of this `GeometryReader`, as far as the `GeometryReader`'s parent is concerned, the height will always be 0. This can cause layout issues because the inner view will render out of bounds.
+```swift
+GeometryReader { proxy in 
+    Rectangle()
+        // The Rectangle will take 20pts, but this height will be ignored by the layout system.
+        .frame(width: proxy.size.width * 0.65, height: 20) 
+}
+.frame(height: 0)
+```
+The core issue is that the `GeometryReader` essentially erases the layout behavior of its content. To solve this, you can place the `GeometryReader` in a `ZStack` and bubble up the measurement. Combined with the previous method, this means:
+- you measure the proposed width
+- you avoid taking up all of the proposed height
+- the height proposed to the content view is untouched
+- the height returned by the content view is untouched
+
+Note this will still cause the `ZStack` to fill the proposed width. This is unavoidable if we want to measure it.
+```swift
+// The Rectangle will have a width proportional to the proposed width without taking up all the proposed height.
+// This is a two pass layout
+@State var availableWidth: CGFloat = 0
+
+ZStack {
+    GeometryReader { proxy in 
+        Color.clear.preference(key: WidthPreferenceKey.self,
+                               value: proxy.size.width)
+    }
+    .frame(height: 0)
+    .onPreferenceChange(WidthPreferenceKey.self) { newWidth in
+        availableWidth = newWidth
+    }
+
+    Rectangle()
+        .frame(width: availableWidth * 0.65, height: 20)
+}
+```
+#### Example 2
+If your inner view is flexible and wants to span the proposed height anyways, the `ZStack` trick is unnecessary.
+
+You will find that the `GeometryReader` aligns the smaller inner view based on undocumented logic (top-leading as of 5/20/22). To make the alignment explicit and customizable, wrap your view in essentially a passthrough frame with an explicit alignment parameter.
+```swift
+// This view will span the proposed width and height
+// The Rectangle will span the proposed height and take 0.65x of the proposed width.
+// It will be centered in the proposed width.
+GeometryReader { proxy in
+    Rectangle() 
+        .frame(width: proxy.size.width * 0.65)
+        // This frame has the same sizing behavior as the GeometryReader, but allows you to change the alignment.
+        .frame(width: proxy.size.width,
+               height: proxy.size.height,
+               alignment: .center)
+}
+```
+
 
 ## Multiline `UILabel` representables
 ### Convention
