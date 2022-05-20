@@ -108,9 +108,9 @@ GeometryReader { proxy in
 ```
 
 
-## Multiline `UILabel` representables
+## Multiline text
 ### Convention
-Use native `Text` instead of `UILabel` representable whenever possible.
+Use native `Text` instead of a `UIViewRepresentable` containing a `UILabel` whenever possible.
 
 ### Rationale
 SwiftUI-UIKit layout bridging is heavily dependent on `intrinsicContentSize`. `UILabel` calculates this size in a special way, taking its `preferredMaxLayoutWidth` into consideration to determine how many lines the label will need. In an Auto Layout environment this property is set automatically, but it won't be set by SwiftUI. This results in incorrect sizing for multiline `UILabels` when used in SwiftUI. The native `Text` doesn't suffer from these problems and takes the proposed width into consideration during a layout pass.
