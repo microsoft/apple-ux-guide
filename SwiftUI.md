@@ -45,7 +45,7 @@ There are cases where you may need to read the size proposed to a view instead o
 If you absolutely need the `GeometryReader`, expanding to fill the dimension you want to measure is unavoidable.
 
 #### Example 1
-Let's say you want to ensure a view's width is always 0.6x of the proposed width and the height is fixed at 20pts.
+Let's say you want to ensure a view's width is always 0.65x of the proposed width and the height is fixed at 20pts.
 
 Wrap a `GeometryReader` in a frame, constraining the dimension you don't care about.
 ```swift
