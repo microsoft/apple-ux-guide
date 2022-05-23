@@ -45,14 +45,14 @@ There are cases where you may need to read the size proposed to a view instead o
 If you absolutely need the `GeometryReader`, expanding to fill the dimension you want to measure is unavoidable.
 
 #### Example 1
-Let's say you want to ensure a view's width is always 0.65x of the proposed width and the height is fixed at 20pts.
+Let's say you want to ensure a view's width is always 0.65x of the proposed width and the height is self sized.
 
 Wrap a `GeometryReader` in a frame, constraining the dimension you don't care about.
 ```swift
 GeometryReader { proxy in 
     ...
 }
-.frame(height: 0) // The GeometryReader will only take the proposed width.
+.frame(height: 0) // The GeometryReader won't fill all proposed height
 ```
 Note that if you place your content inside of this `GeometryReader`, as far as the `GeometryReader`'s parent is concerned, the height will always be 0. This can cause layout issues because the inner view will render out of bounds.
 ```swift
@@ -63,13 +63,13 @@ GeometryReader { proxy in
 }
 .frame(height: 0)
 ```
-The core issue is that the `GeometryReader` essentially erases the layout behavior of its content. To solve this, you can place the `GeometryReader` in a `ZStack` and bubble up the measurement. Combined with the previous method, this means:
+This is caused by the `.frame` we used to constrain the `GeometryReader` to 0 height. To get the benefits of a height-constrained `GeometryReader` and a correctly sized content view, you can place the `GeometryReader` in a `ZStack` and bubble up its measurement. Combined with the previous method, this means:
 - you measure the proposed width
 - you avoid taking up all of the proposed height
 - the height proposed to the content view is untouched
 - the height returned by the content view is untouched
 
-Note this will still cause the `ZStack` to fill the proposed width. This is unavoidable if we want to measure it.
+Note that a `ZStack` will match the size of its largest child in each dimension, so it will still fill all width due to the contained `GeometryReader`.
 ```swift
 // The Rectangle will have a width proportional to the proposed width without taking up all the proposed height.
 // This is a two pass layout
