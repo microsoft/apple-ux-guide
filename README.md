@@ -10,6 +10,7 @@ This guide contains best practices for building great experiences and writing su
 * [Storyboards and Xibs](StoryboardsAndXibs.md)
 * [SwiftUI](SwiftUI.md)
 * [View Controllers](ViewControllers.md)
+* [Shadows](Shadows.md)
 
 ## Contributing
 
