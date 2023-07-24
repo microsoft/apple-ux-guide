@@ -14,3 +14,14 @@ In most cases on both macOS and iOS, it is recommended to avoid storyboards (and
 ## Exceptions
 - Launch Screens on iOS are required to be specified as storyboards.
 - The main menu bar for a macOS app is required to be specified in a XIB.
+
+## How to convert xib to programmatic initialization
+- Change the UIViewController caller
+    - Instead of passing in [nibName](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621359-init) in particular bundle, pass in nil
+    - Make sure no other storyboard is initializing with [iniWithCoder:](https://developer.apple.com/documentation/foundation/nscoding/1416145-initwithcoder?language=objc)
+- Initialize the UIViewController's view appropriately
+    - Override [loadView](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621454-loadview?language=objc). If UIViewController needs to have a customer view, make sure you set the view in loadView. If there were anything that was declared in [awakeFromNib](https://developer.apple.com/documentation/objectivec/nsobject/1402907-awakefromnib?language=objc) make sure it has been moved over to loadView appropriately. For more info, please refer to [apple documentation](https://developer.apple.com/documentation/uikit/view_controllers/displaying_and_managing_views_with_a_view_controller?language=objc)
+    - Any properties that were declared with [IBOutlet](https://developer.apple.com/library/archive/documentation/General/Conceptual/CocoaEncyclopedia/Outlets/Outlets.html) now needs to be programmatically allocated it memory
+    - add any UIView to its self view's [hierarchy](https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview?language=objc_). 
+    - set up all the subviews [constraints](https://developer.apple.com/documentation/uikit/nslayoutconstraint/1526955-activateconstraints/)
+
