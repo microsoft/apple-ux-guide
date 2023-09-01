@@ -1,4 +1,4 @@
-# Storyboards
+# Do NOT use Storyboards or Xibs
 
 ## Convention
 In most cases on both macOS and iOS, it is recommended to avoid storyboards (and XIBs) in favor of programmatically creating views and view controllers
@@ -10,18 +10,43 @@ In most cases on both macOS and iOS, it is recommended to avoid storyboards (and
     - [Compose view hierarchies With NSStackViews/UIStackViews](Layout.md#Compose-Hierarchies-with-NSStackViews/UIStackViews).
     - [Use layout anchor constraints](Layout.md#Use-Layout-Anchor-Constraints)
     - [Create the view hierarchy in loadView](ViewControllers.md#Construct-View-Hierarchies-in-loadView)
+- Not supported in VisionOS
 
 ## Exceptions
-- Launch Screens on iOS are required to be specified as storyboards.
 - The main menu bar for a macOS app is required to be specified in a XIB.
 
-## How to convert xib to programmatic initialization
+## How to convert xib/storyboards to programmatic initialization on iOS
+- Remove any reference to loading UIStoryboard pointer [storyboardWithName:bundle:](https://developer.apple.com/documentation/uikit/uistoryboard/1616216-storyboardwithname)
 - Change the UIViewController caller
-    - Instead of passing in [nibName](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621359-init) in particular bundle, pass in nil
-    - Make sure no other storyboard is initializing with [iniWithCoder:](https://developer.apple.com/documentation/foundation/nscoding/1416145-initwithcoder?language=objc)
-- Initialize the UIViewController's view appropriately
-    - Override [loadView](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621454-loadview?language=objc). If UIViewController needs to have a customer view, make sure you set the view in loadView. If there were anything that was declared in [awakeFromNib](https://developer.apple.com/documentation/objectivec/nsobject/1402907-awakefromnib?language=objc) make sure it has been moved over to loadView appropriately. For more info, please refer to [apple documentation](https://developer.apple.com/documentation/uikit/view_controllers/displaying_and_managing_views_with_a_view_controller?language=objc)
-    - Any properties that were declared with [IBOutlet](https://developer.apple.com/library/archive/documentation/General/Conceptual/CocoaEncyclopedia/Outlets/Outlets.html) now needs to be programmatically allocated it memory
-    - add any UIView to its self view's [hierarchy](https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview?language=objc_). 
-    - set up all the subviews [constraints](https://developer.apple.com/documentation/uikit/nslayoutconstraint/1526955-activateconstraints/)
-
+    - If the UIViewController was initialized by storyboard, instead of [instantiateViewController(withIdentifier:)](https://developer.apple.com/documentation/uikit/uistoryboard/1616214-instantiateviewcontroller), use [init(nibName:bundle:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621359-init) with parameter nil for nibName and bundle.
+    - If the UIViewController was initialized by xibs, instead of passing in [init(nibName:bundle:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621359-init) in particular bundle, pass in nil for nibName and bundle.
+    - Make sure no content of storyboard is initializing with [initWithCoder:](https://developer.apple.com/documentation/foundation/nscoding/1416145-initwithcoder?language=objc).
+- If you were using storyboards, make sure segues related functions do NOT get called after you convert them to programmatic UI setup. 
+    - For example, do NOT Use
+        - [shouldPerformSegue(withIdentifier:sender:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621502-shouldperformsegue)
+        - [prepare(for:sender:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621490-prepare)
+        - [allowedChildrenForUnwinding(from:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621371-allowedchildrenforunwinding)
+        - [childContaining(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621384-childcontaining)
+        - [canPerformUnwindSegueAction(_:from:sender:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/3089101-canperformunwindsegueaction)
+        - [unwind(for:towards:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621473-unwind)
+    - Instead, use
+        - [viewWillAppear(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621510-viewwillappear/)
+        - [viewIsAppearing(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/4195485-viewisappearing)
+        - [viewDidAppear(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621423-viewdidappear)
+        - [viewWillDisappear(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621485-viewwilldisappear)
+        - [viewDidDisappear(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621477-viewdiddisappear)
+        - [addChild(_:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621394-addchild)
+        - [removeFromParent](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621394-addchild)
+        - [dismissViewController](https://developer.apple.com/documentation/appkit/nsviewcontroller/1434413-dismissviewcontroller?language=objc)
+    - Instead of using [performSegue(withIdentifier:sender:)](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621413-performsegue), use [presentViewController:animated:completion:](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621380-presentviewcontroller) or [pushViewController(_:animated:)](https://developer.apple.com/documentation/uikit/uinavigationcontroller/1621887-pushviewcontroller) to UINavigationController stack.
+- Initialize the UIViewController's view appropriately.
+    - Override [loadView](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621454-loadview?language=objc). If UIViewController needs to have a custom view, make sure you set the view in loadView. If there was anything declared in [awakeFromNib](https://developer.apple.com/documentation/objectivec/nsobject/1402907-awakefromnib?language=objc) make sure it has been moved over to loadView appropriately. For more info, please refer to [Apple documentation](https://developer.apple.com/documentation/uikit/view_controllers/displaying_and_managing_views_with_a_view_controller?language=objc).
+    - Modify any properties that were declared with [IBOutlet](https://developer.apple.com/library/archive/documentation/General/Conceptual/CocoaEncyclopedia/Outlets/Outlets.html) now need to be programmatically allocated it memory.
+    - Add any UIView to its self view's hierarchy using [addSubview(_:)](https://developer.apple.com/documentation/uikit/uiview/1622616-addsubview?language=objc_). 
+    - Set up all the subviews' [constraints](https://developer.apple.com/documentation/uikit/nslayoutconstraint/1526955-activateconstraints/)
+        -  You might need to set subviews' [translatesAutoresizingMaskIntoConstraints](https://developer.apple.com/documentation/uikit/uiview/1622572-translatesautoresizingmaskintoco) to false because it is by default true and it will conflict with auto-translated constraints.  
+        - If you use [UIStackView](https://developer.apple.com/documentation/uikit/uistackview) with [init(arrangedSubviews:)](https://developer.apple.com/documentation/uikit/uistackview/1616240-init), it may minimize the number of manual constraints needed. You can also compose UIStackView inside another UIStackView. Nesting multiple stackviews effectively can make your code cleaner.
+- Remove "Launch Screens" in your iOS application's info.plist.
+    - Remove any reference to storyboard or xib files.
+    - Use key [UILaunchScreen](https://developer.apple.com/documentation/bundleresources/information_property_list/uilaunchscreen) instead.
+- Delete your xibs and storyboard files in your resource bundle.
